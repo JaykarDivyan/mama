@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vertical Split Screen with Multiple Selectable Boxes</title>
+    <style>
+        body, html {
+            height: 100%;
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        .split {
+            height: 100%;
+            width: 50%;
+            position: fixed;
+            top: 0;
+        }
+
+        .left {
+            left: 0;
+            background-color: #4CAF50;
+            padding: 20px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .right {
+            right: 0;
+            background-color: #2196F3;
+            padding: 20px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .content {
+            color: white;
+            text-align: center;
+            font-size: 16px;
+            position: relative;
+            top: -20px;
+            max-height: calc(100vh - 60px);
+            overflow: hidden;
+        }
+
+        .scrollable-content {
+            overflow-y: scroll;
+            height: 100%;
+        }
+
+        .scrollable-content::-webkit-scrollbar {
+            display: none;
+        }
+
+        .scrollable-content {
+            scrollbar-width: none;
+        }
+
+        .content h1 {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .content p {
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+
+        .box-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+        }
+
+        .box {
+    background-color: white;
+    color: white; /* Make text white for better contrast */
+    width: 150px;
+    height: 150px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.3s;
+    text-align: center;
+    background-size: cover; /* Ensure the image covers the entire box */
+    background-position: center; /* Center the background image */
+    background-repeat: no-repeat; /* Prevent image repetition */
+}
+
+.box h2 {
+    background-color: rgba(0, 0, 0, 0.5); /* Add a semi-transparent background to the text */
+    padding: 5px 10px;
+    border-radius: 5px;
+}
+
+
+.box-image {
+    width: 80px; /* Adjust size as needed */
+    height: 80px;
+    border-radius: 5px;
+    margin-bottom: 10px; /* Space between image and text */
+}
+
+
+        .box:hover {
+            background-color: #f0f0f0;
+        }
+
+        .box.selected {
+            background-color: #ff5722;
+            color: white;
+            transform: scale(1.1);
+        }
+
+/* Right side split into three sections */
+.right-section {
+    background-color: #f0f0f0;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #333;
+    border-radius: 10px;
+    height: 30%; /* Default height for sections */
+}
+
+.right-section-1 {
+    height: 45%; /* Make Section 1 larger */
+    font-size: 24px;
+    color: #333;
+}
+
+/* Input boxes in Section 2 */
+.right-section-2 {
+    height: 35%; /* Section 2 slightly smaller */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 10px; /* Space between input boxes */
+}
+
+
+
+.right-section-3 {
+    height: 20%; /* Make Section 3 smaller */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.right-section:last-child {
+    margin-bottom: 0;
+}
+
+.input-box {
+    width: 80%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+
+        .button {
+            padding: 10px 20px;
+            background-color: #333;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .button:hover {
+            background-color: #555;
+        }
+    </style>
+</head>
+<body>
+    <div class="split left">
+        <div class="content">
+            <div class="scrollable-content">
+                <h1>Left Side</h1>
+                <p>Content for the left side of the screen.</p>
+                
+                <div class="box-container">
+                    <div class="box" onclick="toggleBox(this, 'Box 1')" style="background-image: url('/image/image1.jpg');">
+                        <h2>Box 1</h2>
+                    </div>
+                    <div class="box" onclick="toggleBox(this, 'Box 2')" style="background-image: url('/image/image2.jpg');">
+                        <h2>Box 2</h2>
+                    </div>
+                    <div class="box" onclick="toggleBox(this, 'Box 3')" style="background-image: url('/image/image3.jpg');">
+                        <h2>Box 3</h2>
+                    </div>
+                    <!-- Add more boxes as needed -->
+                </div>
+                
+                
+            </div>
+        </div>
+    </div>
+
+    <div class="split right">
+        <div class="right-section right-section-1" id="right-section-1">
+            <h1>Select a box</h1>
+        </div>
+        <div class="right-section right-section-2">
+            <!-- Input boxes in Section 2 -->
+            <input type="text" placeholder="Total Person" class="input-box">
+            <input type="text" placeholder="Total Amount" class="input-box">
+        </div>
+        <div class="right-section right-section-3">
+            <button class="button">Click Me!</button>
+        </div>
+    </div>
+    
+
+    <script>
+        function toggleBox(box, content) {
+    // Toggle selection state
+    box.classList.toggle('selected');
+
+    // Update the content of the right section 1
+    const rightSection1 = document.getElementById('right-section-1');
+
+    // Get all selected boxes
+    const selectedBoxes = document.querySelectorAll('.box.selected');
+
+    // Clear the previous content in the right section
+    rightSection1.innerHTML = '';
+
+    // If no boxes are selected, show default message
+    if (selectedBoxes.length === 0) {
+        rightSection1.innerHTML = '<h1>Select a box</h1>';
+    } else {
+        // Append each selected box's content to the right section with a comma
+        selectedBoxes.forEach((box, index) => {
+            const boxContent = box.querySelector('h2').textContent;
+            rightSection1.innerHTML += `<h2>${boxContent}${index < selectedBoxes.length - 1 ? ',' : ''}</h2>`;
+        });
+    }
+}
+
+    </script>
+</body>
+</html>

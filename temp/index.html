@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF Generator</title>
+    <!-- Include the html2pdf.js library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.min.js"></script>
+</head>
+<body>
+    <h1>PDF Generator Interface</h1>
+
+    <!-- User inputs -->
+    <label for="username">Name:</label>
+    <input type="text" id="username" placeholder="Enter your name">
+
+    <label for="message">Message:</label>
+    <textarea id="message" placeholder="Enter a message"></textarea>
+
+    <button id="download">Download PDF</button>
+
+    <!-- JavaScript to handle PDF generation -->
+    <script>
+        document.getElementById('download').addEventListener('click', function () {
+            // Get user input values
+            const userName = document.getElementById('username').value;
+            const userMessage = document.getElementById('message').value;
+
+            // Fetch the template content
+            fetch('template.html')
+                .then(response => response.text())
+                .then(html => {
+                    // Create a temporary container to hold the template content
+                    const container = document.createElement('div');
+                    container.innerHTML = html;
+
+                    // Inject user input into the template
+                    container.querySelector('#name-placeholder').textContent = userName;
+                    container.querySelector('#message-placeholder').textContent = userMessage;
+
+                    // Append the container to the body to make it part of the DOM
+                    document.body.appendChild(container);
+
+                    // Wait a brief moment to ensure content is fully rendered
+                    setTimeout(() => {
+                        // Generate the PDF
+                        html2pdf().from(container).save();
+
+                        // Remove the temporary container after generating the PDF
+                        document.body.removeChild(container);
+                    }, 500);
+                });
+        });
+    </script>
+</body>
+</html>

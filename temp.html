@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vertical Split Screen with Multiple Selectable Boxes</title>
+    <style>
+        /* Add your existing styles here */
+        body, html {
+            height: 100%;
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        .split {
+            height: 100%;
+            width: 50%;
+            position: fixed;
+            top: 0;
+        }
+
+        .left {
+            left: 0;
+            background-color: #4CAF50;
+            padding: 20px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .right {
+            right: 0;
+            background-color: #2196F3;
+            padding: 20px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .content {
+            color: white;
+            text-align: center;
+            font-size: 16px;
+            position: relative;
+            top: -20px;
+            max-height: calc(100vh - 60px);
+            overflow: hidden;
+        }
+
+        .scrollable-content {
+            overflow-y: scroll;
+            height: 100%;
+        }
+
+        .scrollable-content::-webkit-scrollbar {
+            display: none;
+        }
+
+        .scrollable-content {
+            scrollbar-width: none;
+        }
+
+        .content h1 {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .content p {
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+
+        .box-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+        }
+
+        .box {
+            background-color: white;
+            color: white; /* Make text white for better contrast */
+            width: 150px;
+            height: 150px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.3s;
+            text-align: center;
+            background-size: cover; /* Ensure the image covers the entire box */
+            background-position: center; /* Center the background image */
+            background-repeat: no-repeat; /* Prevent image repetition */
+        }
+
+        .box h2 {
+            background-color: rgba(0, 0, 0, 0.5); /* Add a semi-transparent background to the text */
+            padding: 5px 10px;
+            border-radius: 5px;
+        }
+
+        .box:hover {
+            background-color: #f0f0f0;
+        }
+
+        .box.selected {
+            background-color: #ff5722;
+            color: white;
+            transform: scale(1.1);
+        }
+
+        /* Right side split into three sections */
+        .right-section {
+            background-color: #f0f0f0;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #333;
+            border-radius: 10px;
+            height: 30%; /* Default height for sections */
+        }
+
+        .right-section-1 {
+            height: 45%; /* Make Section 1 larger */
+            font-size: 24px;
+            color: #333;
+        }
+
+        .right-section-2 {
+            height: 35%; /* Section 2 slightly smaller */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 10px; /* Space between input boxes */
+        }
+
+        .right-section-3 {
+            height: 20%; /* Make Section 3 smaller */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .right-section:last-child {
+            margin-bottom: 0;
+        }
+
+        .input-box {
+            width: 80%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        .button {
+            padding: 10px 20px;
+            background-color: #333;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .button:hover {
+            background-color: #555;
+        }
+
+        /* Styles for the hidden bill template */
+        .container {
+            width: 70%;
+            margin: auto;
+            border: 1px solid #000;
+            padding: 20px;
+        }
+
+        .header, .footer {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .header h1 {
+            margin: 0;
+        }
+
+        .header p {
+            margin: 5px 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        table, th, td {
+            border: 1px solid #000;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+
+        .total {
+            text-align: right;
+            margin-top: 20px;
+        }
+
+        .total p {
+            margin: 0;
+        }
+
+        #bill-template {
+            display: none; /* Hide the template by default */
+        }
+    </style>
+</head>
+<body>
+    <div class="split left">
+        <div class="content">
+            <div class="scrollable-content">
+                <h1>Left Side</h1>
+                <p>Content for the left side of the screen.</p>
+                <div class="box-container">
+                    <div class="box" onclick="toggleBox(this, 'Box 1')" style="background-image: url('/image/image1.jpg');">
+                        <h2>Box 1</h2>
+                    </div>
+                    <div class="box" onclick="toggleBox(this, 'Box 2')" style="background-image: url('/image/image2.jpg');">
+                        <h2>Box 2</h2>
+                    </div>
+                    <div class="box" onclick="toggleBox(this, 'Box 3')" style="background-image: url('/image/image3.jpg');">
+                        <h2>Box 3</h2>
+                    </div>
+                    <!-- Add more boxes as needed -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="split right">
+        <div class="right-section right-section-1" id="right-section-1">
+            <h1>Select a box</h1>
+        </div>
+        <div class="right-section right-section-2">
+            <!-- Input boxes in Section 2 -->
+            <input type="text" id="name" placeholder="Name" class="input-box">
+            <input type="text" id="number" placeholder="Mobile Number" class="input-box">
+            <input type="text" id="total-persons" placeholder="Total persons" class="input-box">
+            <input type="text" id="total-amount" placeholder="Total Amount" class="input-box">  
+        </div>
+        <div class="right-section right-section-3">
+            <button class="button" onclick="generateBill()">Generate Bill</button>
+        </div>
+    </div>
+
+    <!-- Bill Template -->
+    <div id="bill-template">
+        <div class="container">
+            <div class="header">
+                <h1>SHREE SIDDHI VINAYAK CATERERS</h1>
+                <p>Kiran Park, Nr. Neema High School, Bhimjipura, Ahmedabad-13</p>
+                <p>Santosh Bhai</p>
+                <p>M.8674080468 / M.7016714862</p>
+            </div>
+            <table>
+                <tr>
+                    <th>M/S</th>
+                    <td colspan="2" id="bill-name"></td>
+                    <th>Mobile No.</th>
+                    <td id="bill-mobile-number"></td>
+                </tr>
+                <tr>
+                    <th>Date</th>
+                    <td colspan="4" id="bill-date"></td>
+                </tr>
+                <tr>
+                    <th>No.</th>
+                    <th>Description</th>
+                    <th>Person</th>
+                    <th>Rate</th>
+                    <th>Amount</th>
+                </tr>
+                <tbody id="bill-items">
+                    <!-- Bill items will be added here -->
+                </tbody>
+                <tr>
+                    <td colspan="4" class="total">TOTAL</td>
+                    <td id="bill-total"></td>
+                </tr>
+                <tr>
+                    <td>IN WORDS</td>
+                    <td colspan="4" id="bill-total-words"></td>
+                </tr>
+                <tr>
+                    <td colspan="5">
+                        <div style="display: flex; justify-content: space-between;">
+                            <p style="margin: 0;">E.&O.E</p>
+                            <p style="margin: 0;">For, Shree Siddhi Vinayak Caterers</p>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        function toggleBox(box, content) {
+            // Toggle selection state
+            box.classList.toggle('selected');
+
+            // Update the content of the right section 1
+            const rightSection1 = document.getElementById('right-section-1');
+
+            // Get all selected boxes
+            const selectedBoxes = document.querySelectorAll('.box.selected');
+
+            // Clear the previous content in the right section
+            rightSection1.innerHTML = '';
+
+            // If no boxes are selected, show default message
+            if (selectedBoxes.length === 0) {
+                rightSection1.innerHTML = '<h1>Select a box</h1>';
+            } else {
+                // Append each selected box's content to the right section with a comma
+                selectedBoxes.forEach((box, index) => {
+                    const boxContent = box.querySelector('h2').textContent;
+                    rightSection1.innerHTML += `<h2>${boxContent}${index < selectedBoxes.length - 1 ? ',' : ''}</h2>`;
+                });
+            }
+        }
+
+        function generateBill() {
+            // Get selected boxes
+            const selectedBoxes = document.querySelectorAll('.box.selected');
+            const billItems = document.getElementById('bill-items');
+            billItems.innerHTML = ''; // Clear existing items
+
+            // Populate bill items based on selected boxes
+            selectedBoxes.forEach((box, index) => {
+                const description = box.querySelector('h2').textContent;
+                const persons = document.getElementById('total-persons').value;
+                const amount = document.getElementById('total-amount').value;
+                const rate = amount / persons; // Calculate rate per person
+                
+                billItems.innerHTML += `
+                <tr>
+                    <td>${index + 1}</td>
+                    <td>${description}</td>
+                    <td>${persons}</td>
+                    <td>${rate.toFixed(2)}</td>
+                    <td>${amount}</td>
+                    </tr>
+                    `;
+                });
+                
+                // Set total and date
+            const name = document.getElementById('name').value;
+            const number = document.getElementById('number').value;
+            const totalAmount = document.getElementById('total-amount').value;
+            document.getElementById('bill-name').textContent = name;
+            document.getElementById('bill-mobile-number').textContent = number;
+            document.getElementById('bill-total').textContent = totalAmount;
+            document.getElementById('bill-date').textContent = new Date().toLocaleDateString();
+
+            // Convert total amount to words (simple implementation)
+            document.getElementById('bill-total-words').textContent = convertNumberToWords(totalAmount) + ' only';
+
+            // Show the bill template and print
+            const printContent = document.getElementById('bill-template').innerHTML;
+            const originalContent = document.body.innerHTML;
+            document.body.innerHTML = printContent;
+            window.print();
+            document.body.innerHTML = originalContent;
+            location.reload(); // Reload to reset the page
+        }
+
+        // Simple number to words converter
+        function convertNumberToWords(amount) {
+            const words = [
+                '', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten',
+                'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen', 'Seventeen', 'Eighteen', 'Nineteen', 'Twenty',
+                'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'
+            ];
+
+            function getTens(n) {
+                if (n < 20) return words[n];
+                const tens = Math.floor(n / 10);
+                const units = n % 10;
+                return words[18 + tens] + (units ? ' ' + words[units] : '');
+            }
+
+            function getHundreds(n) {
+                if (n > 99) return words[Math.floor(n / 100)] + ' Hundred ' + getTens(n % 100);
+                return getTens(n);
+            }
+
+            if (amount < 1000) return getHundreds(amount);
+            const thousands = Math.floor(amount / 1000);
+            return getHundreds(thousands) + ' Thousand ' + getHundreds(amount % 1000);
+        }
+    </script>
+</body>
+</html>
